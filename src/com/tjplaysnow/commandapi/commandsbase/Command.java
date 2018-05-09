@@ -2,6 +2,7 @@ package com.tjplaysnow.commandapi.commandsbase;
 
 import com.tjplaysnow.commandapi.commands.SubCommand;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,9 @@ public abstract class Command {
 	
 	private BiPredicate<CommandSender, String[]> command;
 	private List<SubCommand> subCommands;
+	
+	private String castPlayerError = "§cUh oh, you have to be a player for this command.";
+	private boolean castPlayer = false;
 	
 	public Command(String label, String description, String permission, String usage) {
 		this.label = label;
@@ -68,6 +72,14 @@ public abstract class Command {
 	}
 	
 	public boolean onCommand(CommandSender sender, String[] args) {
+		if (castPlayer) {
+			if (!(sender instanceof Player)) {
+				if (!castPlayerError.equalsIgnoreCase("")) {
+					sender.sendMessage(castPlayerError);
+				}
+				return false;
+			}
+		}
 		if (args.length > 1) {
 			if (subCommands.size() > 1) {
 				for (Command subCommand : subCommands) {
